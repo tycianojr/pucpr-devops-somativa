@@ -1,0 +1,20 @@
+{
+    "name": "pucpr-devops-somativa",
+    "version": "1.0.0",
+    "description": "Atividade Somatativa",
+    "main": "index.js",
+    "scripts": {
+      "start": "node index.js",
+      "test": "echo \"Error: nenhum teste especificado\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/tycianojr/pucpr-devops-somativa.git"
+    },
+    "author": "Tyciano Junior",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/tycianojr/pucpr-devops-somativa/issues"
+    }
+  }
+  
