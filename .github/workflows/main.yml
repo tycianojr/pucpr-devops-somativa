@@ -1,63 +1,42 @@
-name: Node.js CI/CD Workflow
+name: Auto approve and merge PRs in Queries Folder
 
+# Trigger the workflow on pull request
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    # Sequence of patterns matched against refs/heads
+    branches:    
+      - 'main'
 
 jobs:
-  build-job:
+
+  changes:
     runs-on: ubuntu-latest
-
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      apps: ${{ steps.filter.outputs.apps }}
+      scripts: ${{ steps.filter.outputs.scripts }}
+      github: ${{ steps.filter.outputs.github }}
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
+    # For pull requests it's not necessary to checkout the code
+    - uses: dorny/paths-filter@v2
+      id: filter
       with:
-        node-version: '20'
-
-    - name: Install Dependencies
-      run: npm install
-
-    - name: Run a build script
-      run: npm run build
-
-  test-job:
-    needs: build-job
+        filters: |
+          apps:
+            - 'apps/**'
+          scripts:
+            - 'scripts/**'
+          github:
+            - '.github/**'
+            
+  autoapprove:
+    needs: changes
+    if: ${{ needs.changes.outputs.apps == 'false' && needs.changes.outputs.scripts == 'false' && needs.changes.outputs.github == 'false'}}
     runs-on: ubuntu-latest
-
+    permissions:
+      pull-requests: write
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    - name: Install Dependencies
-      run: npm install
-
-    - name: Run tests
-      run: npm test
-
-  deploy-job:
-    needs: test-job
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    - name: Build and Deploy
-      run: |
-        npm install
-        npm run build
-        echo "Finalizado"
+      - uses: hmarr/auto-approve-action@v3
