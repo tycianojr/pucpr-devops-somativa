@@ -1,0 +1,29 @@
+name: CI
+
+# Define em quais eventos a pipeline será executada
+on: [push]
+
+jobs:
+  build:
+    # Define a máquina onde o job será executado
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout seu repositório para a máquina do GitHub Actions
+    - uses: actions/checkout@v2
+    
+    # Setup do Node.js para um projeto baseado em Node.js, por exemplo
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+        
+    # Instala dependências e constrói seu projeto (adaptar para outros tipos de projeto)
+    - name: Install dependencies
+      run: npm install
+    - name: Build
+      run: npm run build
+      
+    # Adicione etapas adicionais para teste ou deployment conforme necessário
+    - name: Test
+      run: npm test
